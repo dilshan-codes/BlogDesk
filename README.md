@@ -1,1 +1,1 @@
-# BlogDesk
+# BlogDesk - Personal Blog Project
