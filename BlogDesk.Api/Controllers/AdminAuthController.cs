@@ -84,4 +84,25 @@ public class AdminAuthController : ControllerBase
 
         return Ok(new AdminSessionResponse(token, session.ExpiresAt));
     }
+
+    // Log out this session (and optionally all sessions).
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout([FromHeader(Name = "X-Admin-Token")] string? token, [FromQuery] bool everywhere = false)
+    {
+        if (string.IsNullOrEmpty(token)) return Ok();
+
+        if (everywhere)
+        {
+            var session = _db.AdminSessions.FirstOrDefault(s => s.Token == token);
+            if (session != null)
+                _db.AdminSessions.RemoveRange(_db.AdminSessions.Where(s => s.Email == session.Email));
+        }
+        else
+        {
+            _db.AdminSessions.RemoveRange(_db.AdminSessions.Where(s => s.Token == token));
+        }
+
+        await _db.SaveChangesAsync();
+        return Ok();
+    }
 }
