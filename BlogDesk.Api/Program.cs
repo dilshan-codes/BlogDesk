@@ -16,7 +16,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient<EmailService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Default"), npgsqlOptions =>
+        npgsqlOptions.EnableRetryOnFailure(maxRetryCount: 3, maxRetryDelay: TimeSpan.FromSeconds(5), errorCodesToAdd: null)));
 
 var app = builder.Build();
 
